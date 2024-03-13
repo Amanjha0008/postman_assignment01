@@ -1,0 +1,2066 @@
+{
+	"info": {
+		"_postman_id": "d8aa65aa-b04b-43b0-80a4-a9111c396099",
+		"name": "Postman_Assignment1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33286537"
+	},
+	"item": [
+		{
+			"name": "POST - Create User",
+			"item": [
+				{
+					"name": "POST_CreateUser_200_with_valid_dataset",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const username = \"user_\" + Math.floor(Math.random() * 1000000);",
+									"",
+									"const requestBody = {",
+									"    email: \"dsxijka@gmai.com\",",
+									"    name: \"nishad\", ",
+									"    gender: \"male\", ",
+									"    status: \"active\",",
+									"    username: username,",
+									"};",
+									"pm.request.body = JSON.stringify(requestBody);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parsing the error response JSON",
+									"const errorResponse = pm.response.json();",
+									"if (pm.response.code === 201) {",
+									"    pm.test(\"User created successfully\", function () {",
+									"        pm.expect(pm.response.json()).to.have.property(\"id\");",
+									"    });",
+									"} else {",
+									"    pm.test(\"User creation failed\", function () {",
+									"        console.error(\"User creation failed:\", errorResponse);",
+									"        if (Array.isArray(errorResponse)) {",
+									"            errorResponse.forEach(function (error) {",
+									"                console.error(`Field: ${error.field}, Message: ${error.message}`);",
+									"            });",
+									"        } else {",
+									"            console.error(\"Unexpected error response format:\", errorResponse);",
+									"        }",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ACCESS-TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"nishad\", \"gender\":\"male\", \"email\":\"dsxijka@hotmail.com\", \"status\":\"active\"}"
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST_CreateUser_422_with_invalid_dataset",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const errorResponse = pm.response.json();",
+									"",
+									"// Verify  if the response status is 422 (Unprocessable Entity)",
+									"pm.test(\"Status code 200\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"pm.test(\"Response contains expected error message\", function () {",
+									"    const expectedErrorMessage = \"has already been taken\";",
+									"",
+									"    for (let error of errorResponse) {",
+									"        if (error.message === expectedErrorMessage) {",
+									"            pm.expect(error.field).to.eql(\"email\");",
+									"            return;",
+									"        }",
+									"    }",
+									"    pm.expect.fail(`Expected error message \"${expectedErrorMessage}\" not found in the response`);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Aman\", \"gender\":\"male\", \"email\":\"aman.ramakrishna@15ce.com\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST_Validate_200_Actual_Expected_Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var requestData = JSON.parse(pm.variables.get(\"requestBody\"));",
+									"",
+									"var responseData = pm.response.json();",
+									"",
+									"pm.test(\"Data integrity: Name matches\", function() {",
+									"    pm.expect(responseData.name).to.eql(requestData.name);",
+									"});",
+									"",
+									"pm.test(\"Data integrity: Email matches\", function() {",
+									"    pm.expect(responseData.email).to.eql(requestData.email);",
+									"});",
+									"",
+									"pm.test(\"Data integrity: Gender matches\", function() {",
+									"    pm.expect(responseData.gender).to.eql(requestData.gender);",
+									"});",
+									"",
+									"pm.test(\"Data integrity: Status matches\", function() {",
+									"    pm.expect(responseData.status).to.eql(requestData.status);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var requestData = {",
+									"   \"name\":\"Aman Mishra\", \"gender\":\"male\", \"email\":\"iwjeijw@gmail.com\", \"status\":\"active\"",
+									"};",
+									"",
+									"pm.variables.set(\"requestBody\", JSON.stringify(requestData));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST_201_Field_Validate",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Define the data for the request body",
+									"var requestBody = {",
+									"    \"name\": \"Mohan\",      ",
+									"    \"email\": \"mohanone@gmail.com\", ",
+									"    \"gender\": \"male\",     ",
+									"    \"status\": \"active\"    ",
+									"};",
+									"// converting into JSON",
+									"pm.variables.set(\"requestBody\", JSON.stringify(requestBody));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseData = pm.response.json();",
+									"",
+									"pm.test(\"Field validation: Email format is invalid\", function() {",
+									"    pm.expect(responseData.emailInvalidFormat).to.not.exist; ",
+									"});",
+									"",
+									"pm.test(\"Field validation: Gender value is invalid\", function() {",
+									"    pm.expect(responseData.genderInvalidValue).to.not.exist; ",
+									"});",
+									"",
+									"pm.test(\"Field validation: Status value is invalid\", function() {",
+									"    pm.expect(responseData.statusInvalidValue).to.not.exist; ",
+									"});",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST_404_Missing_End_Points",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body contains error message for missing endpoint\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"HTTP: Not Found\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Aman Tiwari\", \"gender\":\"male\", \"email\":\"aman.oone@15ce.com\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/use",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"use"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST_401_Invalid_token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61b'",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Verify response body contains appropriate error message\", function () {",
+									"    pm.expect(pm.response.json().message).to.eql(\"Invalid token\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET - Retrieve Data",
+			"item": [
+				{
+					"name": "GET_Request_200_with_valid_data_All_Data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"baseUrl\", \"https://gorest.co.in\");",
+									"",
+									"pm.environment.set(\"usersEndpoint\", \"/public/v2/users\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response body is not empty\", function () {",
+									"    pm.expect(responseBody).to.not.be.empty;",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ACCESS-TOKEN"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/public/v2/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET_Request_200_valid_single_user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"baseUrl\", \"https://gorest.co.in\");",
+									"",
+									"pm.environment.set(\"userEndpoint\", \"/public/v2/users/6758775\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test('Response body is not empty', function () {",
+									"    pm.expect(responseBody).to.not.be.empty;",
+									"})",
+									"",
+									"pm.test(\"Response contains data for a single user with ID 6758775\", function () {",
+									"  pm.expect(responseBody.id).to.eql(6758775);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758775",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758775"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET_Request_404_with_InvalidEnd_Points",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response body contains expected error message\", function () {",
+									"    pm.expect(responseBody.message).to.eql(\"Resource not found\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/public/v2/users/fjdhjjadh",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"fjdhjjadh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET_Request_404_with_Invalid_UserID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response body contains expected error message\", function () {",
+									"    pm.expect(responseBody.message).to.eql(\"Resource not found\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/public/v2/users/999999",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET_Request_401_Unauthorize_Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response body contains expected error message\", function () {",
+									"    pm.expect(responseBody.message).to.eql(\"Invalid token\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a745339",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/public/v2/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PUT - Update User",
+			"item": [
+				{
+					"name": "PUT_Update_DATA_200_with_Valid_Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resource is updated as expected\", function () {",
+									"    pm.expect(pm.response.json()).to.eql({",
+									"        \"email\": \"mehak.ramakrishna@15ce.com\",",
+									"        \"name\": \"mehak\",",
+									"        \"gender\": \"male\",",
+									"        \"status\": \"active\",",
+									"        \"id\": 6758764",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ACCESS-TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"mehak\",\"email\": \"mehak.ramakrishna@15ce.com\",\"gender\": \"male\",\"status\": \"active\"}"
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758764",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758764"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT_Update_Specific_field_200_with_partial_update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var updatedFields = {",
+									"   \"email\": \"akash.ramakrishna@15ce.com\",",
+									"    \"name\": \"akash\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: 'https://gorest.co.in/public/v2/users/6758764',",
+									"    method: 'GET',",
+									"    header: {",
+									"        'Content-Type': 'application/json',",
+									"        'Authorization': '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a' ",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var updatedFields = {",
+									"    \"email\": \"akash.ramakrishna@15ce.com\",",
+									"    \"name\": \"akash\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: 'https://gorest.co.in/public/v2/users/6758764',",
+									"    method: 'PUT',",
+									"    header: {",
+									"        'Content-Type': 'application/json',",
+									"        'Authorization': '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a' ",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(updatedFields)",
+									"    }",
+									"}, function (err, res) {",
+									"    ",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Updated fields are reflected\", function () {",
+									"        var responseBody = pm.response.json();",
+									"        pm.expect(responseBody.email).to.eql(updatedFields.email);",
+									"        pm.expect(responseBody.name).to.eql(updatedFields.name);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"akash\",\"email\": \"akash.ramakrishna@15ce.com\",\"gender\": \"male\",\"status\": \"active\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758764",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758764"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT_Update_200_valid_Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});",
+									"",
+									"pm.sendRequest({",
+									"    url: 'https://gorest.co.in/public/v2/users/6758764', ",
+									"    method: 'PUT',",
+									"    header: {",
+									"        'Content-Type': 'application/json'",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"email\": \"akash.ramakrishna@15ce.com\",",
+									"            \"status\": \"active\"",
+									"        })",
+									"    }",
+									"}, function (err, res) {",
+									"    pm.test(\"Response status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Resource is updated as expect\", function () {",
+									"        pm.expect(res.json()).to.eql({",
+									"            \"email\": \"akash.ramakrishna@15ce.com\",",
+									"            \"status\": \"active\"",
+									"        });",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Set up authorization token",
+									"pm.environment.set(\"token\", \"143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758764",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758764"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT_Update_200_with_valid_data integrity(ID remains same)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"    url: 'https://gorest.co.in/public/v2/users/6758764', ",
+									"    method: 'PUT',",
+									"    header: {",
+									"        'Content-Type': 'application/json'",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"name\": \"Ajay\",",
+									"            \"email\": \"ajay738@gmail.com\",",
+									"            \"status\": \"active\"",
+									"        })",
+									"    }",
+									"}, function (err, res) {",
+									"    // Response status code check",
+									"    pm.test(\"Response status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    // Data integrity check",
+									"    pm.test(\"ID remains unchanged after the update\", function () {",
+									"        var responseData = res.json();",
+									"        pm.expect(responseData.id).to.equal(6758764);",
+									"    });",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Ajay\",\n    \"email\": \"ajay738@gmail.com\",\n    \"status\": \"active\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758764",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758764"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT_Update_422_with_Invalid_Data_Format",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var requestBody = {",
+									"    \"id\": 6758764,",
+									"    \"name\": 123,",
+									"    \"email\": \"invalid-email\", ",
+									"    \"gender\": \"male\",",
+									"    \"status\": \"active\"",
+									"};",
+									"",
+									"pm.request.body.raw = JSON.stringify(requestBody);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});",
+									"",
+									"var invalidData = {",
+									"    \"name\": 123, ",
+									"    \"email\": \"ankur\",",
+									"    \"status\": \"active\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: 'https://gorest.co.in/public/v2/users/6758764', ",
+									"    method: 'PUT',",
+									"    header: {",
+									"        'Content-Type': 'application/json'",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(invalidData)",
+									"    }",
+									"}, function (err, res) {",
+									"    pm.test(\"Response status code is 422\", function () {",
+									"        pm.response.to.have.status(422);",
+									"    });",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758764",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758764"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT_Update_404_with_invalid_End_Point",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var requestBody = {",
+									"    \"id\": 6758768,",
+									"    \"status\": \"active\"",
+									"};",
+									"pm.request.body.raw = JSON.stringify(requestBody);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check that the response status code is 422 Unprocessable Entity",
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"// Check that the response body contains the expected error message",
+									"pm.test(\"Response contains expected error message\", function () {",
+									"    var expectedErrorMessage = \"Missing required field: name\"; // Define the expected error message",
+									"    var jsonData = pm.response.json(); // Parse the response body as JSON",
+									"    pm.expect(jsonData.message).to.eql(expectedErrorMessage); // Verify that the error message matches the expected value",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"\",\n    \"gender\": \"\",\n    \"status\": \"\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758768",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758768"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT_Update_404_with_invalid_Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"    url: 'YOUR_API_ENDPOINT',",
+									"    method: 'PUT',",
+									"    header: { 'Authorization': '143b19e8fba61bef81a626502f2abc2a7453392187' }",
+									"},  function (err, res) {",
+									"    pm.test(\"Response status code is 401\", function () {",
+									"        pm.response.to.have.status(401);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a7453392187",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"mehak\",\"email\": \"mehak.ramakrishna@15ce.com\",\"gender\": \"male\",\"status\": \"active\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758764",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758764"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PATCH - Update data ALL",
+			"item": [
+				{
+					"name": "PATCH_Update_200_Valid_data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resource is updated as expected\", function () {",
+									"    var responseBody = pm.response.json();    ",
+									"    pm.expect(responseBody.name).to.eql(\"amulya\");",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"amulya\",\n    \"status\" : \"active\"\n    \n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758590",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758590"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH_Partial_Update_200_Valid_data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"    url: 'https://gorest.co.in/public/v2/users/6758590',",
+									"    method: 'PATCH',",
+									"    header: {",
+									"        'Content-Type': 'application/json'",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            \"email\": \"amulya@gmail.com\"",
+									"        })",
+									"    }",
+									"}, function (err, res) {",
+									"    pm.test(\"Response status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Resource is updated partially\", function () {",
+									"        pm.expect(res.json()).to.eql({",
+									"            \"id\": 6758590,",
+									"            \"name\": \"amulya\",",
+									"            \"email\": \"amulya@gmail.com\",",
+									"        });",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"amulya@gmail.com\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758590",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758590"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH_Update_200_ID_Unchanged",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"ID remains the same after updation\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.id).to.eql(6758590); ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"amulya@gmail.com\",\n    \"status\": \"Inactive\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758590",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758590"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH_Update_422_Invalid_Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"var expectedErrorMessage = [",
+									"    {",
+									"        field: \"gender\",",
+									"        message: \"can't be blank, can be male of female\"",
+									"    },",
+									"    {",
+									"        field: \"status\",",
+									"        message: \"can't be blank\"",
+									"    }",
+									"];",
+									"",
+									"// Verify that the response body contains the expected error messages",
+									"pm.test(\"Response body contains error message for invalid data format\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.eql(expectedErrorMessage);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var requestData = {",
+									"    \"age\": \"17\", ",
+									"    \"date\": \"12 oct 2001\"",
+									"};",
+									"",
+									"pm.environment.set(\"patch_request_body\", JSON.stringify(requestData));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"akas\",\n    \"email\": \"ak@hd\",\n    \"gender\": \"12\",\n    \"status\": \"hd8238\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758590",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758590"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH_Update_404_Invalid_EndPoints",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"    url: pm.environment.get(\"baseURL\") + pm.environment.get(\"invalidEndpoint\"),",
+									"    method: 'GET'",
+									"}, function (err, res) {",
+									"    // Verify that the response status code is 404 Not Found",
+									"    pm.test(\"Response status code is 404\", function () {",
+									"        pm.response.to.have.status(404);",
+									"    });",
+									"",
+									"   pm.test(\"Response body contains error message for invalid endpoint\", function () {",
+									"    var responseBody = pm.response.text();",
+									"    pm.expect(responseBody).to.include(\"HTTP: Not Found\");",
+									"});",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"baseURL\", \"https://gorest.co.in/public/v2/6758590\");",
+									"",
+									"pm.environment.set(\"invalidEndpoint\", \"/6758590\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"amulya\",\n    \"status\" : \"active\"\n    \n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/6758590",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"6758590"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DELETE - remove the data",
+			"item": [
+				{
+					"name": "DELETE_204_with_valid_data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response body is empty\", function () {",
+									"    pm.expect(pm.response.text()).to.be.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ACCESS-TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Akajs\", \"gender\":\"male\", \"email\":\"akash@gmail.com\", \"status\":\"active\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758536",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758536"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE_204_with_specific_field_valid_data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response body is empty\", function () {",
+									"    pm.expect(pm.response.text()).to.be.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"name\" : \"Virat\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758511",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758511"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE_404_Data_Already_Deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response body is empty\", function () {",
+									"    pm.expect(pm.response.text(\"Resource not found\"));",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a'",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Vira\", \"gender\":\"male\", \"email\":\"vira@gmail.com\", \"status\":\"active\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758525",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758525"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE_404_Data_url_Doesn't_exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"    method: 'GET'",
+									"}, function (err, res) {",
+									"    // Validat that the response status code is 404 Not Found",
+									"    pm.test(\"Response status code is 404\", function () {",
+									"        pm.response.to.have.status(404);",
+									"    });",
+									"",
+									"   pm.test(\"Response body contains error message for invalid endpoint\", function () {",
+									"    var responseBody = pm.response.text();",
+									"    pm.expect(responseBody).to.include(\"HTTP: Not Found\");",
+									"});",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533921876a3d4f215076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"name\" : \"Virat\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/public/v2/6758525",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"6758525"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE_401_Invalid_token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Verify response body contains appropriate error message\", function () {",
+									"    pm.expect(pm.response.json().message).to.eql(\"Invalid token\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({",
+									"    key: 'Authorization',",
+									"    value: '143b19e8fba61b'",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "143b19e8fba61bef81a626502f2abc2a74533076fe2b5d9b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/public/v2/users/6758504",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users",
+								"6758504"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
